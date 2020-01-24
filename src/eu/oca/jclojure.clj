@@ -129,13 +129,18 @@
 (defn ddmmGet-dd [ddmm]
   (int (/ ddmm 100)))
 
+
+;; note: we get the absolute value for the minutes the sign is used only with degree
 (defn ddmmGet-mm [ddmm]
   (let [dd (ddmmGet-dd ddmm)]
     ;;(- ddmm (* dd 100))
-    (int
-     (infix
-      ddmm - dd * 100
-      ))))
+    (Math/abs
+     (int
+      (infix
+       
+       ddmm - dd * 100
+
+       )))))
 
 
 
@@ -301,7 +306,7 @@
 
 
 
-;; alt - ; comment region
+;; alt-; comment region
 
 ;; eu.oca.jclojure=> record
 ;; {:n° ads nil, :n° hip "*", :n°type 57.0, :nom "COU 123", :delta 2000 2248.0, :orb "*", :n° bd "22.3963", :date de saisie #inst "1996-03-20T23:00:00.000000000-00:00", :n° fiche 5770, :spectre "K0", :alpha 2000 20123.0, :mag2 "08.9", :nom opérateur "Andrée", :nomsidonie "COU 123", :mag1 "08.6", :modif #inst "2002-07-17T22:00:00.000000000-00:00"}
@@ -337,10 +342,13 @@
             record (despace record0) ;; remove the space char in accessor names
             mag1 (:mag1 record)
             mag2 (:mag2 record)
+            
             Alpha_2000 (:alpha_2000 record)
             Delta_2000 (:delta_2000 record)
+
             hh (hhmmmGet-hh Alpha_2000)
             mmDOTm (hhmmmGet-mmDOTm Alpha_2000)
+
             dd (ddmmGet-dd Delta_2000)
             mm (ddmmGet-mm Delta_2000)
                  
