@@ -19,6 +19,7 @@
                #^{:static true} [banner [String] String]
                #^{:static true} [testLog [String] String]
                #^{:static true} [InterfaceNomResourceClojure [String] String]
+	       ;; deprecated
                #^{:static true} [UpdateDBResourceClojure [String String String String String String String String String String String String String String String String] String]
                ]
      )
@@ -144,43 +145,9 @@
 
 
 
-
-
-
-;; eu.oca.jclojure=> (def rs (readObject "COU 123")) 
-;; Reading Coordonnées...
-;; #'eu.oca.jclojure/rs
-;; eu.oca.jclojure=> (:delta_2000 (despace (first rs)))
-;; 2248.0
-;; eu.oca.jclojure=> (despace (first rs))
-;; {:n°type 57.0, :nom "COU 123", :n°_hip "*", :n°_ads nil, :orb "*", :n°_fiche 5770, :date_de_saisie #inst "1996-03-20T23:00:00.000000000-00:00", :spectre "K0", :delta_2000 2248.0, :mag2 "08.9", :nomsidonie "COU 123", :mag1 "08.6", :nom_opérateur "Andrée", :n°_bd "22.3963", :alpha_2000 20123.0, :modif #inst "2002-07-17T22:00:00.000000000-00:00"}
-;; eu.oca.jclojure=> (despace0 (first rs))
-;; {:n°type 57.0, :nom "COU 123", :n°_hip "*", :n°_ads nil, :orb "*", :n°_fiche 5770, :date_de_saisie #inst "1996-03-20T23:00:00.000000000-00:00", :spectre "K0", :delta_2000 2248.0, :mag2 "08.9", :nomsidonie "COU 123", :mag1 "08.6", :nom_opérateur "Andrée", :n°_bd "22.3963", :alpha_2000 20123.0, :modif #inst "2002-07-17T22:00:00.000000000-00:00"}
-
-
-;; remove spaces in accessor names
-(defn despace [m] 
-  (zipmap (map #(keyword (clojure.string/replace (name %) " " "_"))
-               (keys m))
-          (vals m)))
-
-(defn despace0 [m] 
-  (zipmap (map (fn [x] (keyword
-                        (clojure.string/replace (name x)
-                                                " "
-                                                "_")))
-               (keys m))
-          (vals m)))
-
-
-(defn create-html [body]
-  (html5 {:lang "en"} [:head
-                       [:meta {:charset "UTF-8"}]]
-         [:body body]))
-
 ;; create the interface in HTML to modify Astro data
 (defn create-html-body-OK [mag1 mag2 hh mmDOTm dd mm record Nom]
-  [:body
+  ;;[:body
    [:p {:style "margin-bottom: 0cm", :align "center"}
     [:br]]
    [:p {:style "margin-bottom: 0cm", :align "center"}
@@ -298,7 +265,7 @@
    [:p {:align "left"} "Made with  " 
     [:a {:href "https://clojure.org"}
      [:img {:src "../adminDB/images/Clojure-Logo.png", :title "Clojure web site", :alt "Clojure", :width "198", :height "58"}]]]
-   ] ;; close BODY
+   ;;] ;; close BODY
   )
 
 
@@ -328,9 +295,9 @@
 
 ;; this one is call from the Java code
 (defn InterfaceNomResourceClojure
-  [Nom]
+  [NomForm]
   (let [
-        records (readObject Nom)
+        records (readObject NomForm)
         record0 (first records)
         ]
     
@@ -340,6 +307,8 @@
       
       (let [
             record (despace record0) ;; remove the space char in accessor names
+
+            Nom (:nom record)
             mag1 (:mag1 record)
             mag2 (:mag2 record)
             
@@ -435,7 +404,7 @@
 
 
 
-
+;; deprecated
 (defn -UpdateDBResourceClojure
 
   "A Java-callable function that will launch object database update."
@@ -549,17 +518,15 @@
 ;; ()
 
 (defn readObject
-  "Read the table Coordonnées with Nom as input and display value of object in parameter."
+  "display value of object in parameter and read the table Coordonnées with Nom as input ."
   [name]
   
   (println "jclojure.clj : readObject : Reading Coordonnées...")
 
- 
-					;(jdbc/query db ["SELECT * FROM Sigles"])
-    ;; WARNING: db est accessible meme en dehors du LET ! il semblerait que en clojure def definit des variables globales
+     ;; WARNING: db est accessible meme en dehors du LET ! il semblerait que en clojure def definit des variables globales
     
-    (jdbc/query db
-                [(str "SELECT * FROM Coordonnées WHERE Nom='" name "'")])
+  (jdbc/query db
+              [(str "SELECT * FROM Coordonnées WHERE Nom='" name "'")])
 
  
   )
